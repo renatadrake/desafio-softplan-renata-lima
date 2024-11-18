@@ -1,0 +1,47 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:latest
+    container_name: db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: rinha
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./backend/script.sql:/docker-entrypoint-initdb.d/script.sql:ro
+    deploy:
+      resources:
+        limits:
+          cpus: "0.3"
+          memory: "150MB"
+
+  backend01:
+    build: ./backend
+    container_name: backend01
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/rinha
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: 123
+    depends_on:
+      - db
+    deploy:
+      resources:
+        limits:
+          cpus: "0.6"
+          memory: "200MB"
+
+  backend02:
+    build: ./backend
+    container_name: backend02
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/rinha
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: 123
+    depends_on:
+      - db
+    deploy:
+      resources:
+        limits:
+          cpus: "0.6"
